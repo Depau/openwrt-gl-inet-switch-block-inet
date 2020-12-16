@@ -1,0 +1,67 @@
+#!/bin/sh
+
+action="$1"
+case "$action" in
+  on)
+    ;;
+  off)
+    ;;
+  '')
+    ;;
+  *)
+    echo "Usage: $0 [on|off]" >&2
+    exit 1
+    ;;
+esac
+
+# Don't fail on child fail
+set +e
+
+# Find UCI setting, if set
+index=-1
+while true; do
+  index=$(expr $index + 1)
+
+  src=$(uci -q get "firewall.@forwarding[$index].src")
+  dst=$(uci -q get "firewall.@forwarding[$index].dest")
+  [ x$? != x0 ] && break
+
+  [ "$src" != "lan" ] || [ "$dst" != "wan" ] && continue
+  break
+done
+
+# Check if it was set
+if [ x"$src" == x ] || [ x"$dst" == x ]; then
+  status=on
+else
+  status=off
+fi
+
+# View status if no action was provided
+if [ x"$action" == x ]; then
+  echo "$status"
+  exit 0
+fi
+
+# No-op if action == status
+if [ x"$action" == x"$status" ]; then
+  exit 0
+fi
+
+# Re-enable fail on child fail
+set -e
+
+# Apply changes
+case "$action" in
+  on)
+    uci -q del "firewall.@forwarding[$index]"
+    ;;
+  off)
+    uci -q add firewall forwarding >/dev/null
+    uci -q set 'firewall.@forwarding[-1].src=lan'
+    uci -q set 'firewall.@forwarding[-1].dest=wan'
+    ;;
+esac
+
+uci commit
+

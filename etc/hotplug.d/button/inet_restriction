@@ -1,0 +1,14 @@
+#!/bin/sh
+
+logger button $BUTTON was $ACTION
+
+[ "$BUTTON" != "BTN_0"] && exit 0
+
+case "$ACTION" in
+	pressed)
+		/usr/local/bin/set_inet_restriction on
+		;;
+	released)
+		/usr/local/bin/set_inet_restriction off
+		;;
+esac

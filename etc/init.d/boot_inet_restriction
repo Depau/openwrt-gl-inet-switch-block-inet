@@ -1,0 +1,11 @@
+#!/bin/sh /etc/rc.common
+
+START=18
+STOP=85
+
+start () {
+	logger "Setting Internet restrictions based on boot switch position"
+	/usr/local/bin/boot_inet_restriction
+}
+
+stop () {}

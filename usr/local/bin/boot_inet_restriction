@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set +e
+
+gpio_state="$(cat /sys/kernel/debug/gpio | grep BTN_0 | awk '{ print $6 }')"
+
+# In case of race conditions with the rest of the system, default to blocking
+action=on
+if [ x"$gpio_state" == xhi ]; then
+  action=off
+fi
+
+/usr/local/bin/set_inet_restriction $action
+
