@@ -6,6 +6,8 @@ Copy all the files except this README to the root to enable.
 
 The script expects the firewall zones to be called 'wan' and 'lan'. Modify as needed.
 
+![pic](https://i.postimg.cc/2S9MGD5J/glinet.jpg)
+
 ## License
 
 Public domain or Creative Commons CC0.
