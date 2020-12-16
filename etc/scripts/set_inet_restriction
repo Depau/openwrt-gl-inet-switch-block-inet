@@ -44,27 +44,32 @@ if [ x"$action" == x ]; then
 fi
 
 # No-op if action == status
-if [ x"$action" == x"$status" ]; then
-  exit 0
+if [ x"$action" != x"$status" ]; then
+
+	# Re-enable fail on child fail
+	set -e
+
+	# Apply changes
+	case "$action" in
+	  on)
+	    uci -q del "firewall.@forwarding[$index]"
+	    ;;
+	  off)
+	    uci -q add firewall forwarding >/dev/null
+	    uci -q set 'firewall.@forwarding[-1].src=lan'
+	    uci -q set 'firewall.@forwarding[-1].dest=wan'
+	    ;;
+	esac
+
+	uci commit
+	reload_config
 fi
 
-# Re-enable fail on child fail
-set -e
-
-# Apply changes
-case "$action" in
-  on)
-    uci -q del "firewall.@forwarding[$index]"
-    ;;
-  off)
-    uci -q add firewall forwarding >/dev/null
-    uci -q set 'firewall.@forwarding[-1].src=lan'
-    uci -q set 'firewall.@forwarding[-1].dest=wan'
-    ;;
-esac
-
-uci commit
-
 # Flush conntrack table to drop established connections
-[ x"$action" == "on" ] && conntrack --flush
+if [ x"$action" == x"on" ]; then 
+	for i in $(seq 1 5); do
+		conntrack --flush
+		sleep 1
+	done
+fi
 
