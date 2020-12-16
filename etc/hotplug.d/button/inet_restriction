@@ -6,9 +6,9 @@ logger button $BUTTON was $ACTION
 
 case "$ACTION" in
 	pressed)
-		/usr/local/bin/set_inet_restriction on
+		/etc/scripts/set_inet_restriction on
 		;;
 	released)
-		/usr/local/bin/set_inet_restriction off
+		/etc/scripts/set_inet_restriction off
 		;;
 esac

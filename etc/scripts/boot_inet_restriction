@@ -10,5 +10,5 @@ if [ x"$gpio_state" == xhi ]; then
   action=off
 fi
 
-/usr/local/bin/set_inet_restriction $action
+/etc/scripts/set_inet_restriction $action
 
