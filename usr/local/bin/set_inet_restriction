@@ -65,3 +65,6 @@ esac
 
 uci commit
 
+# Flush conntrack table to drop established connections
+[ x"$action" == "on" ] && conntrack --flush
+
